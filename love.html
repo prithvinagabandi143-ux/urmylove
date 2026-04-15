@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Angel, Sowmya</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500&display=swap');
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background: #0a0a0a;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 182, 193, 0.8);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 2s all ease;
+        }
+
+        .message-box {
+            font-size: 1.5rem;
+            min-height: 120px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #efefef;
+        }
+
+        .btn-interact {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        .btn-interact:hover {
+            background: white;
+            color: black;
+            box-shadow: 0 0 30px white;
+        }
+
+        /* Heart Unlock Animation */
+        #heart-path {
+            fill: none;
+            stroke: #ff4d6d;
+            stroke-width: 2;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+
+        .show { opacity: 1 !important; transform: translateY(0) !important; }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <div class="container">
+        <h1 id="title">Hi, Sowmya</h1>
+        <div class="message-box" id="msg">Sowmya, Prithvi has something he's been waiting to tell you...</div>
+        <button class="btn-interact" id="main-btn" onclick="nextStep()">Are You Ready?</button>
+    </div>
+
+    <script>
+        // 1. Particle System (The Sparkles)
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.color = `hsl(${Math.random() * 30 + 340}, 100%, 70%)`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.05;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            for (let i = 0; i < 5; i++) particles.push(new Particle(e.x, e.y));
+        });
+
+        function animate() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].size <= 0.2) {
+                    particles.splice(i, 1); i--;
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 2. Interactive Logic
+        const title = document.getElementById('title');
+        const msg = document.getElementById('msg');
+        const btn = document.getElementById('main-btn');
+
+        setTimeout(() => { title.classList.add('show'); }, 1000);
+        setTimeout(() => { btn.classList.add('show'); }, 3000);
+
+        let stage = 0;
+        const dialogue = [
+            "Before we begin, look at the sparkles following your touch. That's how my heart follows you.",
+            "You are the most beautiful girl in the world, Sowmya. Not just to me, but to the universe.",
+            "I know I can be annoying, and I know I push your limits...",
+            "But it's only because I'm so deeply in love with every version of you.",
+            "Even when you're mad, you're an angel to me.",
+            "I made this because words aren't enough to describe what Prithvi feels for you.",
+            "Will you promise to stay by my side forever?"
+        ];
+
+        function nextStep() {
+            if (stage < dialogue.length) {
+                btn.style.opacity = '0';
+                msg.style.opacity = '0';
+                
+                setTimeout(() => {
+                    msg.innerText = dialogue[stage];
+                    msg.style.opacity = '1';
+                    stage++;
+                    
+                    if (stage === dialogue.length) {
+                        btn.innerText = "Yes, Prithvi. I Promise.";
+                    } else {
+                        btn.innerText = "Tell me more...";
+                    }
+                    btn.style.opacity = '1';
+                }, 800);
+            } else {
+                finalSurrender();
+            }
+        }
+
+        function finalSurrender() {
+            document.querySelector('.container').innerHTML = `
+                <h1 class="show" style="font-size: 5rem;">I Love You, Sowmya</h1>
+                <p style="font-size: 1.5rem; color: #ffb6c1; animation: fadeIn 3s;">
+                    You are my soul, my angel, and my everything.<br>
+                    Forever yours, <br>
+                    <strong>- Prithvi</strong>
+                </p>
+                <div style="font-size: 80px; margin-top: 20px; animation: pulse 2s infinite;">🌹</div>
+            `;
+            document.body.style.transition = "3s background";
+            document.body.style.background = "radial-gradient(circle, #2d0b16 0%, #000000 100%)";
+        }
+    </script>
+</body>
+</html>
